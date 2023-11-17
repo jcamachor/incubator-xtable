@@ -14,7 +14,28 @@ variables:
 stages:
 - stage: build
   jobs:
-  - job: Linux
+  - job: compile-linux
     pool: vmssagentspool
     steps:
-    - template: compile-and-test.yml
+    - template: compile.yml
+      parameters:
+        jdkDirectory: '/usr/lib/jvm/java-11-openjdk-amd64'
+        jdkVersionOption: '1.11'
+  - job: test-java8
+    displayName: 'Test with Java 8'
+    pool: vmssagentspool
+    steps:
+    - template: test.yml
+      parameters:
+        jdkDirectory: '/usr/lib/jvm/java-8-openjdk-amd64'
+        jdkVersionOption: '1.8'
+    dependsOn: compile-linux
+  - job: test-java11
+    displayName: 'Test with Java 11'
+    pool: vmssagentspool
+    steps:
+    - template: test.yml
+      parameters:
+        jdkDirectory: '/usr/lib/jvm/java-11-openjdk-amd64'
+        jdkVersionOption: '1.11'
+    dependsOn: compile-linux

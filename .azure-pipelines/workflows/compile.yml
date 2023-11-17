@@ -1,0 +1,25 @@
+parameters:
+  jdkDirectory: ''
+  jdkVersionOption: ''
+
+steps:
+  - task: Cache@2
+    inputs:
+      key: 'maven | "$(Agent.OS)" | **/pom.xml'
+      restoreKeys: |
+        maven | "$(Agent.OS)"
+        maven
+      path: $(MAVEN_CACHE_FOLDER)
+    displayName: Cache Maven local repo
+  - task: Maven@4
+    inputs:
+      mavenPomFile: 'pom.xml'
+      options: $(MAVEN_OPTS)
+      mavenOptions: '-Xmx4096m -DskipTests=true'
+      javaHomeOption: 'path'
+      jdkDirectory: '${{parameters.jdkDirectory}}'
+      jdkVersionOption: '${{parameters.jdkVersionOption}}'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'install'
